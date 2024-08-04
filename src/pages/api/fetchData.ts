@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import mongoose from "mongoose";
 import axios from "axios";
 import Stock from "../../models/Stock";
-import { headers } from "next/headers";
 
 // Global variable to store data
 let data: any[] = [];
@@ -19,8 +18,7 @@ const fetchData = async () => {
     const promises = cryptoSymbols.map(
       (symbol) =>
         axios.get(
-          `https://api.coingecko.com/api/v3/simple/price?ids=${symbol}&vs_currencies=inr`,
-          { headers: { x_cg_demo_api_key: "CG-Vrz3Kg36W1zyZSjrmNQ43z2V" } }
+          `https://api.coingecko.com/api/v3/simple/price?ids=${symbol}&vs_currencies=inr&x_cg_demo_api_key=CG-6nizqwwsBWbCZaWJuS56ZNQh`
         )
       //   replce x_cg_demo_api_key with your newly generated one if this doesnt work, get your own api key from https://www.coingecko.com/en/developers/dashboard
     );
@@ -28,7 +26,7 @@ const fetchData = async () => {
     const responses = await Promise.all(promises);
     const fetchedData = responses.map((response, index) => ({
       symbol: cryptoSymbols[index].toUpperCase(),
-      price: response.data[cryptoSymbols[index]].usd,
+      price: response?.data[cryptoSymbols[index]].inr,
       timestamp: new Date(),
     }));
 
@@ -51,9 +49,12 @@ setInterval(fetchData, 5000);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!mongoose.connection.readyState) {
-    await mongoose.connect(process.env.MONGO_URL || "mongodb://localhost:27017/finance", {
-      dbName: "finance",
-    }); 
+    await mongoose.connect(
+      process.env.MONGO_URL || "mongodb://localhost:27017/finance",
+      {
+        dbName: "finance",
+      }
+    ); 
   }
 
   if (req.method === "POST") {
