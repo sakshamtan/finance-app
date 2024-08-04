@@ -4,7 +4,7 @@ import Stock from "../../models/Stock";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!mongoose.connection.readyState) {
-    await mongoose.connect("mongodb://localhost:27017/finance", {
+    await mongoose.connect(process.env.MONGO_URL || "mongodb://localhost:27017/finance", {
       dbName: "finance",
     });
   }

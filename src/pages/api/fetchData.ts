@@ -16,11 +16,13 @@ const fetchData = async () => {
       "litecoin",
       "bitcoin-cash",
     ];
-    const promises = cryptoSymbols.map((symbol) =>
-      axios.get(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${symbol}&vs_currencies=inr`,
-        { headers: { x_cg_demo_api_key: 'CG-Vrz3Kg36W1zyZSjrmNQ43z2V' } }
-      )
+    const promises = cryptoSymbols.map(
+      (symbol) =>
+        axios.get(
+          `https://api.coingecko.com/api/v3/simple/price?ids=${symbol}&vs_currencies=inr`,
+          { headers: { x_cg_demo_api_key: "CG-Vrz3Kg36W1zyZSjrmNQ43z2V" } }
+        )
+      //   replce x_cg_demo_api_key with your newly generated one if this doesnt work, get your own api key from https://www.coingecko.com/en/developers/dashboard
     );
 
     const responses = await Promise.all(promises);
@@ -49,7 +51,7 @@ setInterval(fetchData, 5000);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!mongoose.connection.readyState) {
-    await mongoose.connect("mongodb://localhost:27017/finance", {
+    await mongoose.connect(process.env.MONGO_URL || "mongodb://localhost:27017/finance", {
       dbName: "finance",
     }); 
   }
